@@ -28,4 +28,47 @@ get_article_list_from_page <- function(page_no) {
   
   return(articles_tmp)
 }
-
+article_links <- tibble()
+ # zamieniłem przestarzałą data_frame() na tibble()
+for(i in 1:n_index_pages) {
+  article_links_tmp <- get_article_list_from_page(i)
+ 
+  article_links <- bind_rows(article_links, article_links_tmp)
+ 
+  # czekamy, żeby być grzecznym dla serwerów
+  Sys.sleep(sample(seq(0.25, 1, 0.25), 1))
+}
+ 
+rm(article_links_tmp, i)
+get_article <- function(article_url) {
+  page <- read_html(article_url, encoding = "ISO_8859-2")
+  
+  # autor tekstu
+  author <- page %>% html_node("div#gazeta_article_author") %>% html_text() %>% trimws()
+  
+  # data publikacji
+  date <- page %>% html_node("div#gazeta_article_date") %>% html_text() %>% trimws() %>%
+     str_replace_all("[\t\n ]", "") %>% dmy_hm()
+  
+  # tytuł tekstu
+  title <- page %>%html_node("h1") %>% html_text() %>% trimws()
+  
+  # lead
+  lead <- page %>% html_node("div#gazeta_article_lead") %>% html_text() %>% trimws()
+ 
+  # pełna treść artykułu
+  body <- page %>% html_node("div#gazeta_article_body") %>% html_text() %>% trimws()
+  
+  # wszystkie dane pakujemy razem
+  article <- data_frame(title = title,
+                        lead = lead,
+                        body = body,
+                        author = author,
+                        date = date,
+                        url = article_url)
+  
+  # czekamy, żeby być grzecznym dla serwera
+  Sys.sleep(sample(seq(0.25, 1, 0.25), 1))
+ 
+  return(article)
+}
