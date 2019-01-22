@@ -1,5 +1,5 @@
 # Sentiment-in-Discourse
-Analysis of sentiments in public political discourse
+# Analysis of sentiments in public political discourse
 library(tidyverse)
 library(rvest)
 library(stringr)
