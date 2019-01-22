@@ -4,13 +4,16 @@ library(tidyverse)
 library(rvest)
 library(stringr)
 library(lubridate)
+
 # pomiędzy pt1 a pt2 wpada numer strony indeksu
 base_url_pt1 <- "http://wiadomosci.gazeta.pl/wiadomosci/0,114871.html?str="
 base_url_pt2 <- "_19834953"
  
 # ile stron indeksu pobieramy?
 n_index_pages <- 50
-get_article_list_from_page <- function(page_no) {
+
+get_article_list_from_page <- function(page_no) 
+{
   page_url <- paste0(base_url_pt1, page_no, base_url_pt2)
   
   page <- read_html(page_url)
@@ -28,6 +31,7 @@ get_article_list_from_page <- function(page_no) {
   
   return(articles_tmp)
 }
+
 article_links <- tibble()
  # zamieniłem przestarzałą data_frame() na tibble()
 for(i in 1:n_index_pages) {
