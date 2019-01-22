@@ -1,0 +1,32 @@
+# Sentiment-in-Discourse-2
+# Analysis of sentiments in public political discourse, part 2. analiza artykułóów
+
+library(tidyverse)
+library(tidytext)
+library(stringr)
+library(lubridate)
+
+articles <- readRDS("articles.RDS")
+
+# wydobywanie dat
+
+articles <- articles %>%
+   # oznaczenie działów na podstawie numerku w URLu
+   mutate(dzial = str_sub(url, 42, 47)) %>%
+   # dzien, dzien tygodnia, miesiac i godzina publikacji
+   mutate(day = day(date),
+          month = month(date),
+          year = year(date),
+          hour = hour(date),
+          wday = factor(wday(date),
+                        levels = c(2, 3, 4, 5, 6, 7, 1),
+                        labels = c("pn", "wt", "śr", "cz", "pt", "sb", "nd")))
+
+# ile tekstów w poszczególnych miesiącach
+
+articles %>%
+   count(year, month) %>%
+   ggplot() +
+   geom_col(aes(make_date(year, month, 1), n), fill="lightgreen", color = "gray50") +
+   scale_x_date(date_breaks = "1 months", date_labels = "%m.%Y") +
+   theme(axis.text.x = element_text(angle = 45, hjust=1, vjust=1))
