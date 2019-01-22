@@ -72,3 +72,12 @@ get_article <- function(article_url) {
  
   return(article)
 }
+articles <- article_links %>%
+   # działaj wierszami
+   rowwise() %>%
+   # dla każdego wiersza wywołaj funkcję get_article() z parametrem wziętym z kolumny "link"
+   do(get_article(.$link)) %>%
+   # złącz wszystkie otrzymane rezultaty
+   bind_rows() %>% 
+   ungroup()
+   saveRDS(articles, file = "articles.RDS")
