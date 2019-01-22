@@ -20,7 +20,7 @@ get_article_list_from_page <- function(page_no) {
      html_nodes("li") %>%
      html_nodes("h2")
   
-  articles_tmp <- data_frame(link = links %>% html_node("a") %>% html_attr("href"),
+  articles_tmp <- tibble(link = links %>% html_node("a") %>% html_attr("href"),
                              title =  links %>% html_node("a") %>% html_text())
   
   articles_tmp <- articles_tmp %>%
@@ -60,7 +60,7 @@ get_article <- function(article_url) {
   body <- page %>% html_node("div#gazeta_article_body") %>% html_text() %>% trimws()
   
   # wszystkie dane pakujemy razem
-  article <- data_frame(title = title,
+  article <- tibble(title = title,
                         lead = lead,
                         body = body,
                         author = author,
