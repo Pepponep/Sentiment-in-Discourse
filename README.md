@@ -12,6 +12,51 @@ base_url_pt2 <- "_19834953"
 # ile stron indeksu pobieramy?
 n_index_pages <- 50
 
+#próbuje poprawić XXXXXXXX
+safe_read_html <- safely(read_html)
+get_article_details <- function(art_url) {
+   # próbujemy pobrać stronę
+   page <- safe_read_html(art_url, encoding = "iso-8859-2")
+ 
+   # jeśli się nie udało - wychodzimy z pustą tabelką
+   if(is.null(page$result)) {
+      return(tibble())
+   }
+ 
+   # udało się - wynik mamy w $result
+   page <- page$result
+ # tytuł - to H1 na stronie
+   tytul <- page %>%
+      html_node(xpath = "//h1") %>%
+      html_text() %>%
+      trimws()
+ 
+   # autor
+   autor <- page %>%
+      html_node(xpath = "//div[@id='gazeta_article_author']/span") %>%
+      html_text() %>%
+     trimws()
+ 
+   # data publikacji
+   data <- page %>%
+      html_node(xpath = "//div[@id='gazeta_article_date']/time") %>%
+      html_attr("datetime") %>%
+      ymd_hm()
+ 
+   # lead
+   lead <- page %>%
+      html_node(xpath = "//div[@id='gazeta_article_lead']") %>%
+      html_text() %>%
+      trimws()
+ 
+   # pakujemy to w 1-wierszowa tabele
+   article <- tibble(url = art_url, title = tytul, author = autor, date = data, lead = lead)
+ 
+   return(article)
+}
+
+# XXXXXXXXXXXXX
+
 get_article_list_from_page <- function(page_no) 
 {
   page_url <- paste0(base_url_pt1, page_no, base_url_pt2)
